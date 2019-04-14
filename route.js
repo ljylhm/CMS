@@ -9,24 +9,23 @@ let routeArr = [
 ]
 
 let routesItem = []
+
+// route name以字符串为主 如果有多级菜单以,分隔
 let routes = [{
     path:"/index",
+    name:"首页",
     component:require("./page/index.vue").default
 },{
     path:"/serach",
-    component:require("./page/serach.vue").default
+    name:"主要课程,第一篇",
+    component:require("./page/serach.vue").default,
+    children:[]
 },{
     path:"/video",
+    name:"视频列表",
     component:require("./page/video.vue").default
 }]
 
-
-
-// for(let i = 0,len = routeArr.length;i<len;i++){
-//     routesItem.push({
-//         path:"./"+i
-//     })
-// }
 
 export default new Router({
     routes

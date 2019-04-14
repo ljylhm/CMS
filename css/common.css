@@ -56,6 +56,10 @@ p{
     width: 180px
 }
 
+.dialog-footer-1{
+    text-align: center
+}
+
 .pagination{
     width: 100%;
     background: #fff;

@@ -1,6 +1,10 @@
 <template>
   <div class="tap-contain">
-     课程列表
+     <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item v-for="(item,index) in nameTitleList" :key="index">
+            {{item}}
+        </el-breadcrumb-item>
+     </el-breadcrumb>
   </div>
 </template>
 
@@ -9,7 +13,8 @@ import helper from "@helper"
 export default {
   data () {
     return {
-        mes:"欢迎来到这里"
+        mes:"欢迎来到这里",
+        nameTitleList:[]
     }
   },
   methods:{
@@ -17,6 +22,10 @@ export default {
           console.log(index)
           helper.routerJump(index)
       }
+  },
+  created(){
+    let routeName = this.$route.name || ""
+    this.nameTitleList = routeName.split(",")
   },
   props:["name"]
 }

@@ -21,7 +21,8 @@ module.exports = {
           'Vue$': 'vue/dist/vue.js',
           '@': path.resolve(__dirname, './js'),
           '@helper':path.resolve(__dirname,'./src/lib/helper'),
-          '@http':path.resolve(__dirname,'./src/lib/http')
+          '@http':path.resolve(__dirname,'./src/lib/http'),
+          '@api':path.resolve(__dirname,"./src/lib/api")
         }
       },
       module:{

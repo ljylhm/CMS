@@ -4,7 +4,7 @@
         <strong>{{title}}</strong>
       </p>
       <div class="search-main">
-        <slot></slot>
+        <slot>暂无数据</slot>
       </div>
   </div>
 </template>

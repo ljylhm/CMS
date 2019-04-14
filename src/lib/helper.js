@@ -1,4 +1,61 @@
 import { Message, MessageBox, Loading, Notification } from 'element-ui';
+import openFile from "./openFile"
+import config from "../config/config"
+import http from "./http"
+(function (D) {
+    D.ljyParse = function (str) {
+        var arr = /Date\((\d{13})\)/.exec(str);
+        if (arr && arr.length == 2) return new Date(Number(arr[1]));
+        return new Date(Date.parse(str.replace(/-/g, '/')));
+    };
+
+    D.prototype.ljyMinus = function (date) {
+        var ms = (this.getTime() - date.getTime()); // / 24 / 3600 / 1000;
+
+        var day = Math.floor(ms / 24 / 3600 / 1000),
+            hh = Math.floor((ms / 3600 / 1000) % 24),
+            mm = Math.floor((ms / 1000 / 60) % 60),
+            ss = Math.floor((ms / 1000) % 60);
+        return {
+            day: day,
+            hour: hh,
+            minute: mm,
+            second: ss
+        };
+    }
+
+    D.prototype.ljyGetWeek = function () {
+        return ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][this.getDay()];
+    }
+
+    D.prototype.ljyFormat = function (format) {
+        var o = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "H+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "f+": this.getMilliseconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3),
+            "w+": this.ljyGetWeek()
+        };
+
+        if (/(y+)/.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+        for (var k in o) if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        }
+        return format;
+    };
+})(Date);
+
+(function (S) {
+    S.prototype.trim = function () {
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+})(String);
+
 const helper = {
     /*
     * @初始化路由
@@ -118,6 +175,25 @@ const helper = {
 
     NotifiClose(NotifiInstance) {
         NotifiInstance.close();
+    },
+
+    // 获取本地Base64图片
+    getLocalImg: function(cb) {        // 获取本地base64图片
+        var opener = new openFile("")
+        opener.getBase64((data)=>{
+            console.log("二进制数据",data)
+            cb && cb(data)
+        })
+    },
+    upLoadImage(cb){
+        this.getLocalImg((data)=>{
+            http.httpPost(config.api.upload,{
+                fileContent:data.data
+            }).then(response=>{
+                cb && cb(response)
+                console.log(response)
+            }) 
+        })
     }
 }
 

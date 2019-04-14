@@ -2,35 +2,25 @@
 <div class="table-contain">
     <div class="header">
       <div class="header-title">
-        <strong>课程列表</strong>  
+        <strong>{{title || ""}}</strong>  
       </div>
       <div class="header-btn">
         <slot name="btn"></slot>
       </div>
     </div>
-    <el-table :data="tableData" border  style="width: 100%">
-      <el-table-column align="center" prop="date" label="日期" width="180">
-      </el-table-column>
-      <el-table-column align="center" prop="name" label="姓名" width="180">
-      </el-table-column>
-      <el-table-column align="center" prop="address" label="地址">
-      </el-table-column>
-      <el-table-column align="center" label="操作" width="180">
-        <template scope="props">
-           <el-button type="text" size="small" @click="chooseRow(props.row)">查看</el-button>
-           <el-button type="text" size="small" @click="removeItem(props.$index)">移除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="table-main">
+       <slot></slot>
+    </div>
     <div class="pagination">
         <el-pagination
+           background
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
+          :current-page="mCurrPage"
+          :page-sizes="mPageSizes"
+          :page-size="mCurrPageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :total="totalRecords">
         </el-pagination>
     </div>
   </div>
@@ -40,33 +30,39 @@
 export default {
   data() {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+        mShowPager: true,
+        mCurrPage: 0,
+        mCurrPageSize: 0,
+        mPageSizes: null,
+        mTotalRecords:0,
+        mTitle:"",
     }
   },
   methods:{
-    chooseRow(){
-
+    getPagingInfo: function () {
+        return {
+            PageSize: this.mCurrPageSize,
+            PageIndex: this.mCurrPage
+        }
     },
-    removeItem(){
-
+    handleSizeChange: function (val) {
+        this.mCurrPageSize = val;
+        this.$emit("pageChange", this.getPagingInfo());
+    },
+    handleCurrentChange: function (val) {
+        this.mCurrPage = val;
+        this.$emit("pageChange", this.getPagingInfo());
     }
-  }
+   },
+    created(){
+      this.mShowPager = this.showPager != false;
+      this.mCurrPage = this.currPage || 1;
+      this.mPageSizes = this.pageSizes || [10, 20, 50, 100];
+      this.mCurrPageSize = this.currPageSize || this.mPageSizes[0]
+    },
+    // totalRecords 总条数 currPage 当前页数 pageSizes 每页的条数 currPageSize 每个页面的条数
+    // showPager 是否展示分页器
+    props:["totalRecords","currPage","pageSizes","currPageSize","showPager","title"]
 }
 </script>
 <style scoped>
@@ -75,14 +71,15 @@ export default {
   background-color: #fff;
 }
 .table-contain .header{
-  height: 40px;
+  height: 46px;
+  border-bottom: 1px solid #ddd;
 }
 .table-contain .header div{
   height: 100%;
 }
 .table-contain .header .header-title{
   float: left;
-  line-height: 40px;
+  line-height: 46px;
   padding: 0px 12px;
   font-size: 14px;
 }
@@ -90,6 +87,15 @@ export default {
   float: right;
   box-sizing: border-box;
   padding-right: 10px;
-  line-height: 36px;
+  line-height: 40px;
+}
+.table-main{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 12px;
+}
+.pagination{
+  width: 100%;
+  padding: 10px 0px 12px;
 }
 </style>

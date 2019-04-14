@@ -1,5 +1,7 @@
 import axios from "axios"
 import helper from "@helper"
+import config from "../config/config"
+const API_URL = config.apiurl 
 
 const methodList = {
     "get":"get",
@@ -25,7 +27,10 @@ axios.interceptors.response.use(function (response) {
     // 返回数据处理
     let data = response.data || {}
     if(loadingIns.close) loadingIns.close()
-    return data;
+    if(data.Code != config.STATUS_SUCCESS){
+        helper.alertInfo(data.message || "未知错误","错误提示","error")
+    }
+    return data
   }, function (error) {
     // 对响应错误做点什么
     if(loadingIns.close) loadingIns.close()
@@ -36,7 +41,9 @@ axios.interceptors.response.use(function (response) {
 const http = {
     http(method,url,data,opts={}){
         let userMethod = method.toLowerCase()
-        
+        if(url.indexOf("http") === -1){ // 如果填写完整地址
+            url = API_URL + url
+        }
         if(methodList[userMethod]){
             let options = Object.assign({},{
                 method,
