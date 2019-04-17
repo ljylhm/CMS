@@ -185,6 +185,15 @@ const helper = {
             cb && cb(data)
         })
     },
+    // file转换成base64
+    fileToBase64(file,cb){
+        var reader = new FileReader();
+        reader.readAsDataURL(file); // 读出 base64
+        reader.onload = function (ev) {
+            var dataURL = ev.target.result
+            cb && cb(dataURL)
+        }
+    },
     upLoadImage(cb){
         this.getLocalImg((data)=>{
             http.httpPost(config.api.upload,{

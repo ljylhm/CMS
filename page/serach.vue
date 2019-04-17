@@ -4,42 +4,26 @@
       <v-search searchName="查询课程">
           <template>
              <el-form label-width="100px" label-position="right" :inline="true" :model="serachForm">
+                <el-form-item label="老师名称：">
+                    <el-input v-model="serachForm.TeacherName" placeholder="请输入名字" 
+                    class="input-small"></el-input>
+                </el-form-item>
                 <el-form-item label="课程名称：">
-                    <el-input v-model="serachForm.name" placeholder="请输入名字" 
+                    <el-input v-model="serachForm.CollageName" placeholder="请输入名字课程名称"
                     class="input-small"></el-input>
                 </el-form-item>
-                <el-form-item label="课程ID：">
-                    <el-input v-model="serachForm.name" placeholder="请输入名字课程ID"
-                    class="input-small"></el-input>
-                </el-form-item>
-                <el-form-item label="创建人：">
-                    <el-input v-model="serachForm.startTime" placeholder="请输入创建人"
-                    class="input-small"></el-input>
-                </el-form-item>
-                <br/>
-                <el-form-item label="类型：">
-                    <el-select v-model="serachForm.type" placeholder="请选择" class="input-small">
-                        <el-option
-                          v-for="item in options"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="时间：">
-                  <el-date-picker class="input-small"
-                    v-model="serachForm.time"
-                     type="daterange"
-                     align="right"
-                     unlink-panels
-                     range-separator="至"
-                     start-placeholder="开始日期"
-                     end-placeholder="结束日期">
-                  </el-date-picker>
+                <el-form-item label="课程类型：">
+                   <el-select v-model="form.CategoryId" placeholder="请选择" class="input-small">
+                      <el-option 
+                        v-for="item in CategoryOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-button type="primary" @click="onSubmit">查询</el-button>
+                    <el-button type="primary" @click="search">查询</el-button>
                 </el-form-item>
              </el-form>
           </template>
@@ -82,7 +66,8 @@
 
       <el-dialog :title="isAdd ? '新增课程':'修改课程'" :visible.sync="isDialogVisible" 
                  :close-on-click-modal="false"
-                 @close="dialogCloseCall">
+                 @close="dialogCloseCall"
+                 @open="dialogOpenCall">
         <el-form label-width="100px" label-position="right" 
                  :inline="true"
                  :model="form"
@@ -191,13 +176,15 @@
            </el-form-item>
            <br/>
            <el-form-item label="课程详情：" prop="CollageContent"> 
-             <el-input style="width:220%"
+              <div id="toolbar"></div>
+              <div id="mainarea"></div>
+             <!-- <el-input style="width:220%"
                 type="textarea"
                 size="medium" 
                 :rows="4"
                 placeholder="请输入课程详情"
                 v-model="form.CollageContent">
-             </el-input>   
+             </el-input>    -->
            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer dialog-footer-1">
@@ -212,6 +199,29 @@
 import helper from "@helper"
 import http from "@http"
 import api from "@api"
+import config from "@config"
+
+var E = require('wangeditor')
+import { VueEditor } from 'vue2-editor'
+
+let generateEditor = ()=>{
+    var editor = new E('#toolbar',"#mainarea")
+    editor.create()
+    // 配置服务器端地址
+    editor.customConfig.uploadImgServer = config.apiurl+config.api.upload
+    editor.customConfig.uploadImgShowBase64 = true
+    editor.customConfig.customUploadImg = function (files, insert) {
+        helper.fileToBase64(files,(data)=>{
+          
+        })
+
+        // if(data.Code == 200){
+        //     helper.message("上传成功","success")
+        //   }else{
+        //     helper.message("请重新上传图片","warning")
+        //   }
+    }
+}
 
 const SAVE_URL = "/api/v1/manager/collage/AddCollage"
 export default {
@@ -229,14 +239,13 @@ export default {
       }
       return {
         isAdd:true,                    // 是否新增
-        isDialogVisible:true,         // 是否显示模态框
+        isDialogVisible:false,         // 是否显示模态框
         serachForm: {                  // 查询的表单  
-          user: "",
-          name: "",
-          creater:"",
-          startTime:"",
-          endTime:"",
-          type:""
+          CategoryId: "",
+          TeacherName: "",
+          CollageName:"",
+          PageSiz:"",
+          PageIndex:""
         },
         form:{                         // 课程的表单
           Title:"",                    // 课程标题
@@ -286,6 +295,16 @@ export default {
          CategoryOptions:[{
             value: '1',
             label: '免费专区'
+         },{
+            value:"2",
+            label:"大咖课堂"
+         },{
+            value:"3",
+            label:"跨境电商"
+         }],
+         CategoryOptions:[{
+            value: '',
+            label: '选择全部'
          },{
             value:"2",
             label:"大咖课堂"
@@ -382,10 +401,12 @@ export default {
       },
       search(){  // 查询函数
          let page = this.$refs["table"].getPagingInfo()
-         http.httpPost("/api/v1/manager/collage/GetCollageList",{
-                "PageSiz": page.PageSize,
-                "PageIndex": page.PageIndex,
-         }).then(data=>{
+         this.serachForm = Object.assign({},this.serachForm,{
+            "PageSiz": page.PageSize,
+            "PageIndex": page.PageIndex,
+         })
+         http.httpPost("/api/v1/manager/collage/GetCollageList",this.serachForm)
+         .then(data=>{
             let result = data.Data,
                 totalCount = data.TotalCount   
             this.tableData = result
@@ -394,13 +415,22 @@ export default {
       },
       upLoadImg(){ // 获取图片
         helper.upLoadImage((data)=>{
-          console.log("xxx执行到了这里",data)
+          if(data.Code == 200){
+            helper.message("上传成功","success")
+            this.form.SmallImageUrl = data.fileUrl
+          }else{
+            helper.message("请重新上传图片","warning")
+          }
         })
       },
       // 关闭前的回调
       dialogCloseCall(){
         this.$refs['form'].resetFields();
-      } 
+      },
+      // 打开前的回调
+      dialogOpenCall(){
+         this.$nextTick(generateEditor)
+      }
   },
   created(){
    api.getTeacherInfo().then(data=>{
@@ -423,6 +453,14 @@ export default {
   width: 80px;
   height: 60px;
   vertical-align:middle
+}
+#toolbar{
+  border: 1px solid #ccc
+}
+#mainarea{
+  width: 100%;
+  height: 120px;
+  border: 1px solid #ccc
 }
 </style>
 

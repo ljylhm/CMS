@@ -77,3 +77,7 @@ p{
     padding: 0;
     height: 40px;
 }
+
+.w-e-toolbar{
+    flex-wrap: wrap
+}

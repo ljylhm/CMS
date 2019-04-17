@@ -6,7 +6,8 @@ const IP_ADDRESS = developHelper.getCurrentIp()
 
 module.exports = {
     entry: {
-        "index":"./index.js"
+        "index":"./index.js",
+        "login":"./login.js"
     },
     output:{
         filename: "[name].js",
@@ -22,7 +23,9 @@ module.exports = {
           '@': path.resolve(__dirname, './js'),
           '@helper':path.resolve(__dirname,'./src/lib/helper'),
           '@http':path.resolve(__dirname,'./src/lib/http'),
-          '@api':path.resolve(__dirname,"./src/lib/api")
+          '@api':path.resolve(__dirname,"./src/lib/api"),
+          '@img':path.resolve(__dirname,"./image"),
+          '@config':path.resolve(__dirname,"./src/config/config")
         }
       },
       module:{

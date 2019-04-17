@@ -27,6 +27,8 @@ axios.interceptors.response.use(function (response) {
     // 返回数据处理
     let data = response.data || {}
     if(loadingIns.close) loadingIns.close()
+
+    // handle 后端的坑 
     if(data.Code != config.STATUS_SUCCESS){
         helper.alertInfo(data.message || "未知错误","错误提示","error")
     }
