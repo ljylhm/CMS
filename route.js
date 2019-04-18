@@ -3,9 +3,9 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 let routeArr = [
-    "index.vue",
-    "serach.vue",
-    "video.vue"
+"index.vue",
+"serach.vue",
+"video.vue"
 ]
 
 let routesItem = []
@@ -24,6 +24,20 @@ let routes = [{
     path:"/video",
     name:"视频列表",
     component:require("./page/video.vue").default
+}
+,{
+    path:"/teacher",
+    name:"教师g管理",
+    component:require("./page/teacher.vue").default
+},{
+    path:"/rate",
+    name:"评价管理",
+    component:require("./page/rate.vue").default
+},
+,{
+    path:"/amdin",
+    name:"登陆角色管理",
+    component:require("./page/amdin.vue").default
 }]
 
 

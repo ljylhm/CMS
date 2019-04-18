@@ -9,7 +9,8 @@ const api = {
             PageSiz:"100000",
             PageIndex:"1"
         })
-    }
+    },
+    
 }
 
 export default api
