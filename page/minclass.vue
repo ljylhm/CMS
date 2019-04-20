@@ -13,33 +13,43 @@
     </v-search>
 
     <!-- table组件 -->
-    <v-table title="角色列表" :totalRecords="totalCount" ref="table" @pageChange="pageChange">
+    <v-table title="课节列表" :totalRecords="totalCount" ref="table" @pageChange="pageChange">
      <template slot="btn">
       <el-button type="primary" size="small" @click="addDialog">新增</el-button>
     </template>
     <el-table :data="tableData" border  style="width: 100%">
       <el-table-column align="center" type="index" label="序号" width="60"> </el-table-column>
-      <el-table-column align="center" prop="LoginName" label="登陆名" width="120"></el-table-column>
-      <el-table-column align="center" prop="LoginPwd" label="登陆密码" width="120"></el-table-column>
-      <el-table-column align="center" prop="RoleName" label="角色类型" width="100">
+      <el-table-column align="center" prop="Id" label="课节Id" width="80"></el-table-column>
+      <el-table-column align="center" prop="ClassName" label="课节名称" width="120"></el-table-column>
+      <el-table-column align="center" prop="ClassSize" label="视频大小" width="100">
       </el-table-column>
-      <el-table-column align="center" prop="Telephone" label="手机号" min-width="200">
+      <el-table-column align="center" prop="ClassTimeLong" label="课节时长" min-width="200">
       </el-table-column>
-      <el-table-column align="center" prop="Email" label="邮箱" width="200"></el-table-column>
 
-      <el-table-column align="center" prop="Status" label="状态" width="50">
-       <template slot-scope="props">{{props.row.Status==0?"启用":"无效"}}</template>
+      <el-table-column align="center" prop="CollagePrice" label="课节价格/元" width="100">
+        <template slot-scope="props">{{props.row.CollagePrice/100}}</template>
+      </el-table-column>
+      <el-table-column align="center" prop="SalePrice" label="课节售价/元" width="100"><template slot-scope="props">{{props.row.SalePrice/100}}</template></el-table-column>
+      <el-table-column align="center" prop="IsFree" label="是否试看" width="100">
+       <template slot-scope="props">{{props.row.IsFree==0?"否":"是"}}</template>
      </el-table-column>
-     <el-table-column align="center" prop="Description" label="创建时间" width="180">
+     <el-table-column align="center" prop="IsFreeForVip" label="vip免费" width="100">
+       <template slot-scope="props">{{props.row.IsFreeForVip==0?"否":"是"}}</template>
+     </el-table-column>
+     <el-table-column align="center" prop="Status" label="状态" width="120">
+       <template slot-scope="props">{{getStatus(props.row.Status)}}</template>
+     </el-table-column>
+
+     <el-table-column align="center" prop="CreateTime" label="创建时间" width="180">
        <template slot-scope="props">
-        {{new Date(props.row.CreatedTime).ljyFormat("yyyy-MM-dd HH:mm")}}
+        {{new Date(props.row.CreateTime).ljyFormat("yyyy-MM-dd HH:mm")}}
       </template>
     </el-table-column>
 
     <el-table-column align="center" label="操作">
      <template slot-scope="props">
       <el-button type="text" size="small" @click="upDateDialog(props.row)">修改</el-button>
-      <el-button type="text" size="small" @click="removeItem(props.row)">{{props.row.Status==0?"移除":"有效"}}</el-button>
+      <!-- <el-button type="text" size="small" @click="removeItem(props.row)">{{props.row.Status==0?"移除":"有效"}}</el-button> -->
     </template>
   </el-table-column>
 </el-table>
@@ -118,7 +128,7 @@ ref="form"
 </el-form-item>
 <br>
 <el-form-item label="课节详情：" prop="CollageContent"> 
- <el-input style="width:400%"
+ <el-input style="width:210%"
  type="textarea"
  size="medium" 
  :rows="5"
@@ -144,30 +154,32 @@ var initForm;
 const SAVE_URL = "/api/v1/manager/collage/AddCollage"
 export default {
 	data() {
+
 		function selectValidator(rule, value, callback) {
-			if(!value) callback(rule.message);
-			else callback();
-		}
-		function notVaild(rule, value, callback){
-			let reg = /^[0-9]*$/ 
-			let val = value.toString() 
-			if(val.trim() === "") callback("选项不能为空")
-				else if(!reg.test(value)) callback("请输入数字")
-					else callback()
-				}
-			return {
-        options:[{value:0,label:"正在排课"},{value:1,label:"上线"},{value:2,label:"下线"},{value:3,label:"删除"}],
-        classStatus:[{value:0,label:"否"},{value:1,label:"是"}],
-        roles:[{
-          value: '管理员',
-          label: '管理员'
-        },{
-          value: '一般用户',
-          label: '一般用户'
-        }],
-        tableData:[],
-        classOptions:[],
-        totalCount:0,
+      //console.log(value)
+      if(!value) callback(rule.message);
+      else callback();
+    }
+    function notVaild(rule, value, callback){
+     let reg = /^[0-9]*$/ 
+     let val = value.toString() 
+     if(val.trim() === "") callback("选项不能为空")
+      else if(!reg.test(value)) callback("请输入数字")
+       else callback()
+     }
+   return {
+    options:[{value:"0",label:"正在排课"},{value:"1",label:"上线"},{value:"2",label:"下线"},{value:"3",label:"删除"}],
+    classStatus:[{value:"0",label:"否"},{value:"1",label:"是"}],
+    roles:[{
+      value: '管理员',
+      label: '管理员'
+    },{
+      value: '一般用户',
+      label: '一般用户'
+    }],
+    tableData:[],
+    classOptions:[],
+    totalCount:0,
             isAdd:true,                    // 是否新增
              isDialogVisible:false,         // 是否显示模态框
              serachForm: {                  // 查询的表单  
@@ -236,6 +248,15 @@ export default {
         this.search()
 
       },
+      getStatus(e){
+        var data=this.options
+        for (var i = 0; i < data.length; i++) {
+          if((data[i].value.toString())==e){
+            return data[i].label
+          }
+        }
+
+      },
       pageChange(param){        // 分页变化触发的函数
           // param 示例 {PageSize: 10, PageIndex: 2}
           // 请求操作可以放在这里 分页请求操作放在这里
@@ -250,24 +271,13 @@ export default {
       	this.isAdd = false
       	this.isDialogVisible = true
       	console.log("带过来的参数",row)
-      	this.form=Object.assign({},row) ;
-      },
-      removeItem(e){
-      	console.log(e);
-      	let para=Object.assign({},e) ;
-      	if(e.Status=="1"){
-      		para.Status=0;
-      	}else{
-      		para.Status=1
-      	}
+        row.IsFree=row.IsFree.toString()
+        row.IsFreeForVip=row.IsFreeForVip.toString()
+        row.Status=row.Status.toString()
 
-      	http.httpPost("/api/v1/manager/admin/UpdateAdmin",para).then(data=>{
-      		console.log(data)
-      		if(data) helper.message("操作成功","success")
-      			this.search()
-
-      	})
+        this.form=Object.assign({},row) ;
       },
+      
       add(){
 
       },
@@ -292,14 +302,15 @@ export default {
       		this.$refs['form'].validate((valid) => {
       			if(valid){
 
-      				http.httpPost("/api/v1/manager/admin/UpdateAdmin",this.form).then(data=>{
-      					console.log(data)
-      					if(data) helper.message("修改成功","success")
-      						this.search()
-      					this.isDialogVisible=false;
-      				})
-      			}
-      		})
+
+              http.httpPost("/api/v1/manager/collage/UpdateCollageClass",this.form).then(data=>{
+               console.log(data)
+               if(data) helper.message("修改成功","success")
+                this.search()
+              this.isDialogVisible=false;
+            })
+            }
+          })
       	}
 
       },
@@ -307,8 +318,8 @@ export default {
       	let page = this.$refs["table"].getPagingInfo();
       	let para=Object.assign(this.serachForm,page);
       	console.log(para);
-      	http.httpPost("/api/v1/manager/admin/GetAdminList",para).then(data=>{
-      		let result = data.Date,
+      	http.httpGet("/api/v1/manager/collageclass/GetCollageClassList/"+2,{}).then(data=>{
+      		let result = data.Data,
       		totalCount = data.TotalCount   
       		this.tableData = result
       		this.totalCount = totalCount
