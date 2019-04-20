@@ -27,7 +27,7 @@ let routes = [{
 }
 ,{
     path:"/teacher",
-    name:"教师g管理",
+    name:"教师管理",
     component:require("./page/teacher.vue").default
 },{
     path:"/rate",
@@ -38,6 +38,24 @@ let routes = [{
     path:"/amdin",
     name:"登陆角色管理",
     component:require("./page/amdin.vue").default
+},{
+    path:"/classtype",
+    name:"课程分类",
+    component:require("./page/classtype.vue").default
+}
+,{
+    path:"/member",
+    name:"会员管理",
+    component:require("./page/member.vue").default
+},
+,{
+    path:"/charge",
+    name:"购买记录",
+    component:require("./page/charge.vue").default
+},{
+    path:"/minclass",
+    name:"课节管理",
+    component:require("./page/minclass.vue").default
 }]
 
 

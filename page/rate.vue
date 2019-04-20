@@ -16,52 +16,62 @@
 						<el-input v-model="serachForm.mobile" placeholder="请输入手机号" 
 						class="input-small"></el-input>
 					</el-form-item>
-					<el-form-item label="">
-						<el-button type="primary" @click="onSubmit">查询</el-button>
-					</el-form-item>
-				</el-form>
-			</template>
-		</v-search>
+					<el-form-item label="状态：">
+						<el-select v-model="serachForm.status" placeholder="请选择" class="input-small">
+							<el-option
+							v-for="item in options"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="">
+					<el-button type="primary" @click="onSubmit">查询</el-button>
+				</el-form-item>
+			</el-form>
+		</template>
+	</v-search>
 
-		<!-- table组件 -->
-		<v-table title="评论列表" :totalRecords="totalCount" ref="table" @pageChange="pageChange">
-			<template slot="btn">
-				<!-- <el-button type="primary" size="small" @click="addDialog">新增</el-button> -->
-			</template>
-			<el-table :data="tableData" border  style="width: 100%">
-				<el-table-column align="center" type="index" label="序号" width="60"> </el-table-column>
-				<el-table-column align="center" prop="UserId" label="UserId" width="80"></el-table-column>
-				<el-table-column align="center" prop="UserName" label="昵称" width="80"></el-table-column>
-				<el-table-column align="center" prop="Description" label="头像" width="150">
-					<template slot-scope="props">
-						<div class="contain-imgs">
-							<img :src="props.row.LogoUrl" alt="">
-						</div>
-					</template>
-				</el-table-column>
-				<el-table-column align="center" prop="Scroe" label="评分/星" width="100">
-				</el-table-column>
-				<el-table-column align="center" prop="Content" label="内容" min-width="400">
-				</el-table-column>
-				
-				<el-table-column align="center" prop="CollageId" label="课程Id" width="100"></el-table-column>
-				<el-table-column align="center" prop="CollageClassId" label="课节Id" width="100"></el-table-column>
-				<el-table-column align="center" prop="Status" label="状态" width="50">
-					<template slot-scope="props">{{props.row.Status==1?"启用":"删除"}}</template>
-				</el-table-column>
-				<el-table-column align="center" prop="Description" label="创建时间" width="180">
-					<template slot-scope="props">
-						{{new Date(props.row.CreateTime).ljyFormat("yyyy-MM-dd HH:mm")}}
-					</template>
-				</el-table-column>
+	<!-- table组件 -->
+	<v-table title="评论列表" :totalRecords="totalCount" ref="table" @pageChange="pageChange">
+		<template slot="btn">
+			<!-- <el-button type="primary" size="small" @click="addDialog">新增</el-button> -->
+		</template>
+		<el-table :data="tableData" border  style="width: 100%">
+			<el-table-column align="center" type="index" label="序号" width="60"> </el-table-column>
+			<el-table-column align="center" prop="UserId" label="UserId" width="80"></el-table-column>
+			<el-table-column align="center" prop="UserName" label="昵称" width="80"></el-table-column>
+			<el-table-column align="center" prop="Description" label="头像" width="150">
+				<template slot-scope="props">
+					<div class="contain-imgs">
+						<img :src="props.row.LogoUrl" alt="">
+					</div>
+				</template>
+			</el-table-column>
+			<el-table-column align="center" prop="Scroe" label="评分/星" width="100">
+			</el-table-column>
+			<el-table-column align="center" prop="Content" label="内容" min-width="400">
+			</el-table-column>
+			
+			<el-table-column align="center" prop="CollageId" label="课程Id" width="100"></el-table-column>
+			<el-table-column align="center" prop="CollageClassId" label="课节Id" width="100"></el-table-column>
+			<el-table-column align="center" prop="Status" label="状态" width="50">
+				<template slot-scope="props">{{props.row.Status==1?"启用":"删除"}}</template>
+			</el-table-column>
+			<el-table-column align="center" prop="Description" label="创建时间" width="180">
+				<template slot-scope="props">
+					{{new Date(props.row.CreateTime).ljyFormat("yyyy-MM-dd HH:mm")}}
+				</template>
+			</el-table-column>
               <!-- <el-table-column align="center" prop="address" label="地址">
               </el-table-column> -->
-              <!-- <el-table-column align="center" label="操作">
+              <el-table-column align="center" label="操作">
               	<template slot-scope="props">
-              		<el-button type="text" size="small" @click="upDateDialog(props.row)">修改</el-button>
+              		<!-- <el-button type="text" size="small" @click="upDateDialog(props.row)">修改</el-button> -->
               		<el-button type="text" size="small" @click="removeItem(props.row)">{{props.row.Status==1?"移除":"有效"}}</el-button>
               	</template>
-              </el-table-column> -->
+              </el-table-column>
           </el-table>
       </v-table>
 
@@ -137,6 +147,7 @@ export default {
 					else callback()
 				}
 			return {
+				options:[{value:-1,label:"请选择"},{value:1,label:"有效"},{value:0,label:"无效"}],
 				tableData:[],
 				totalCount:0,
             isAdd:true,                    // 是否新增
@@ -206,9 +217,9 @@ methods: {
       		para.Status=1
       	}
 
-      	http.httpPost("/api/v1/manager/teacher/UpdateTearcherInfo",para).then(data=>{
+      	http.httpPost("/api/v1/manager/collageEvaluate/UpdateCollageEvaluate",para).then(data=>{
       		console.log(data)
-      		if(data) helper.message("移除成功","success")
+      		if(data) helper.message("操作成功","success")
       			this.search()
 
       	})

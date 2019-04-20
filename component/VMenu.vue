@@ -16,13 +16,17 @@
       <i class="el-icon-document"></i>
       <span slot="title">主要课程</span>
     </el-menu-item>
+    <el-menu-item index="minclass">
+      <i class="el-icon-document"></i>
+      <span slot="title">课节管理</span>
+    </el-menu-item>
     <el-menu-item index="video">
       <i class="el-icon-mobile-phone"></i>
       <span slot="title">视频列表</span>
     </el-menu-item>
     <el-menu-item index="teacher">
       <i class="el-icon-mobile-phone"></i>
-      <span slot="title">教师g管理</span>
+      <span slot="title">教师管理</span>
     </el-menu-item>
     <el-menu-item index="rate">
       <i class="el-icon-news"></i>
@@ -31,6 +35,18 @@
     <el-menu-item index="amdin">
       <i class="el-icon-news"></i>
       <span slot="title">登陆角色管理</span>
+    </el-menu-item>
+    <el-menu-item index="classtype">
+      <i class="el-icon-news"></i>
+      <span slot="title">课程分类</span>
+    </el-menu-item>
+    <el-menu-item index="member">
+      <i class="el-icon-news"></i>
+      <span slot="title">会员管理</span>
+    </el-menu-item>
+    <el-menu-item index="charge">
+      <i class="el-icon-news"></i>
+      <span slot="title">购买记录</span>
     </el-menu-item>
   </el-menu>
 </div>
